@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">image_editor</string>
+    <string name="filtername">filter name</string>
+    <string name="filtertxt">filter</string>
+</resources>
