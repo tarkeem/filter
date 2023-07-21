@@ -1,9 +1,9 @@
-package com.example.image_editor
+package com.example.image_editor.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.MediaStore
+import com.example.image_editor.EditImageActivity
 import com.example.image_editor.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
 
 
         binding.saveimg.setOnClickListener {
-            Intent(this,EditImageActivity::class.java).also {
+            Intent(this, EditImageActivity::class.java).also {
                     intent ->
                 startActivity(intent)}
         }
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             println("navigate..............")
             data?.data.let { uriimg ->
                 println(uriimg.toString()+"...........................................................")
-                Intent(applicationContext,EditImageActivity::class.java).also {
+                Intent(applicationContext, EditImageActivity::class.java).also {
                         intent -> intent.putExtra(imgurl,uriimg)
 
                     startActivity(intent)}

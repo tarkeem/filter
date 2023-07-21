@@ -1,9 +1,7 @@
 package com.example.image_editor
 
-import android.app.Application
 import android.content.Context
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,7 +12,9 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.image_editor.activities.MainActivity
 import com.example.image_editor.databinding.ActivityEditImageBinding
+import com.example.image_editor.viewmodel.EditImageViewModel
 import jp.co.cyberagent.android.gpuimage.GPUImage
 import jp.co.cyberagent.android.gpuimage.filter.GPUImageAddBlendFilter
 import jp.co.cyberagent.android.gpuimage.filter.GPUImageBilateralBlurFilter
@@ -22,6 +22,7 @@ import jp.co.cyberagent.android.gpuimage.filter.GPUImageBoxBlurFilter
 import jp.co.cyberagent.android.gpuimage.filter.GPUImageCrosshatchFilter
 import jp.co.cyberagent.android.gpuimage.filter.GPUImageDilationFilter
 import jp.co.cyberagent.android.gpuimage.filter.GPUImageEmbossFilter
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class EditImageActivity : AppCompatActivity() {
@@ -34,28 +35,38 @@ class EditImageActivity : AppCompatActivity() {
 
         )
     private  lateinit var binding: ActivityEditImageBinding
+    private  val myViewModel:EditImageViewModel by viewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivityEditImageBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setOserver()
+     prepareImg()
 
-     intent.getParcelableExtra<Uri>(MainActivity.imgurl).let { uri ->
-         var gpu=GPUImage(this)
-         println(uri.toString()+".......................second...........................")
-         val  inpustr=contentResolver.openInputStream(uri!!)
-         val bitamb=BitmapFactory.decodeStream(inpustr)
-         gpu.setImage(bitamb)
-         gpu.setFilter(GPUImageDilationFilter())
-         var newbitmb= gpu.bitmapWithFilterApplied
-         binding.previewimg.setImageBitmap(newbitmb)
-         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-         binding.filterlist.setLayoutManager(layoutManager);
-         binding.filterlist.adapter=CustomAdapter(this,filterList,binding)
-
-
-
-     }
     }
+    private  fun  setOserver()
+    {
+        myViewModel.imageLiveState.observe(this) { it ->
+            val datastate = it
+            if (datastate.isLoading) {
+                binding.progressBar.visibility=View.VISIBLE
+            } else {
+                binding.progressBar.visibility=View.GONE
+            }
+            datastate.imageBitMap.let {bitmap->
+                binding.previewimg.setImageBitmap(bitmap)
+
+
+            }
+        }
+    }
+    private fun  prepareImg()
+    {
+        intent.getParcelableExtra<Uri>(MainActivity.imgurl).let { uri ->
+            myViewModel.PrepareImage(uri!!);
+        }
+    }
+
 }
 
 
