@@ -5,9 +5,14 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Environment
+import androidx.core.content.FileProvider
 import com.example.image_editor.data.ImageFilter
 import jp.co.cyberagent.android.gpuimage.GPUImage
 import jp.co.cyberagent.android.gpuimage.filter.*
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.InputStream
 
 class EditImageRepoImpl(private val cxt:Context):EditImageRepo {
@@ -428,6 +433,36 @@ class EditImageRepoImpl(private val cxt:Context):EditImageRepo {
        return  imageFilters
 
     }
+
+    @SuppressLint("SuspiciousIndentation")
+    override suspend fun saveImage(image: Bitmap): Uri? {
+       return try {
+        val storageDir=File(cxt.getExternalFilesDir(Environment.DIRECTORY_PICTURES),"saved image")
+           if (!storageDir.exists()){
+               storageDir.mkdir()
+           }
+
+               val fileName="${System.currentTimeMillis()}.jpg"
+               val file=File(storageDir,fileName)
+               saveFile(file,image)
+                FileProvider.getUriForFile(cxt,"${cxt.packageName}.provider",file)
+
+        }
+        catch (err:java.lang.Exception)
+        {
+            null
+        }
+    }
+
+    private fun saveFile(file:File,imageBitmap: Bitmap)
+    {
+        with(FileOutputStream(file)){
+            imageBitmap.compress(Bitmap.CompressFormat.JPEG,100,this)
+            flush()
+            close()
+        }
+    }
+
 
 
 }

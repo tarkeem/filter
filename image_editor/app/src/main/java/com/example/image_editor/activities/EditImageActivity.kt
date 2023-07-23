@@ -102,7 +102,9 @@ class EditImageActivity : AppCompatActivity(),filterListeners {
         /*first,make interface then make your activity inherit it then pass this as instance of the
         interface so any the change will affect on your activity */
         binding.previewimg.setImageBitmap(filter.filterPreview)
+        myViewModel.saveImage(filter.filterPreview)
     }
+
 
 }
 

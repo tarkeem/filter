@@ -7,4 +7,5 @@ import com.example.image_editor.data.ImageFilter
 interface EditImageRepo {
     suspend fun prepareImage(imageUri: Uri):Bitmap?
     suspend fun getFilters(imageBitmap: Bitmap):List<ImageFilter>?
+    suspend fun saveImage(image: Bitmap):Uri??
 }

@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
 
 
         binding.saveimg.setOnClickListener {
-            Intent(this, EditImageActivity::class.java).also {
+            Intent(applicationContext, SavedImagesActivity::class.java).also {
                     intent ->
                 startActivity(intent)}
         }
