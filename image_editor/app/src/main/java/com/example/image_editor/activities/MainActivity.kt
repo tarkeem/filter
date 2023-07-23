@@ -24,6 +24,8 @@ class MainActivity : AppCompatActivity() {
                     intent ->
                 startActivity(intent)}
         }
+
+
         binding.editimg.setOnClickListener {
             println("clicked")
 

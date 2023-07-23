@@ -1,17 +1,18 @@
 package com.example.image_editor.viewmodel
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.image_editor.data.ImageFilter
 import com.example.image_editor.repositories.EditImageRepo
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.example.image_editor.utilities.coroutines
 
 class EditImageViewModel(private  val editImageRepo: EditImageRepo):ViewModel() {
 
+    //region::prepareImage
     private val imageState:MutableLiveData<ImageDataState>by lazy {
         MutableLiveData()
     }
@@ -19,33 +20,91 @@ class EditImageViewModel(private  val editImageRepo: EditImageRepo):ViewModel() 
 
 
     fun PrepareImage(imageUri: Uri){
-        CoroutineScope(Dispatchers.IO).launch {
+        coroutines.io {
             runCatching {
-    imageLiveState.value?.isLoading=true
+   EmitImageState(true)
                 editImageRepo.prepareImage(imageUri)
 
             }.onSuccess {
                 if (it!=null)
                 {
-                    imageLiveState.value?.imageBitMap=it
+                    EmitImageState(imageBitMap = it)
 
                 }
                 else
                 {
-                    println("error happen......................")
+                    println("null image......................")
                 }
             }.onFailure {
+                println(it.message)
                 println("error happen......................")
             }
         }
     }
-    private fun EmitImageState(isLoading:Boolean=false,imageBitMap:Bitmap?=null,err:String?=null){
+    @SuppressLint("SuspiciousIndentation")
+    private fun EmitImageState(isLoading:Boolean=false, imageBitMap:Bitmap?=null, err:String?=null){
     val  dataState=ImageDataState(isLoading,imageBitMap,err)
-        imageState.value=dataState
+        imageState.postValue(dataState)
 
     }
 
 
    data class ImageDataState(var isLoading:Boolean, var imageBitMap:Bitmap?, val err:String?)
+    //endregion
+
+
+
+
+    //region::prepareImageFilter
+    private val imageFilterState:MutableLiveData<ImageFilterDataState>by lazy {
+        MutableLiveData()
+    }
+    val  imageFilterLiveState:LiveData<ImageFilterDataState>get() = imageFilterState
+
+
+
+    fun loadFilters(imageBitMap: Bitmap)
+    {
+
+        coroutines.io {
+            runCatching {
+                EmitFilterState(isLoading = true)
+                editImageRepo.getFilters(imageBitMap)
+            }.onSuccess {
+                if (it!=null)
+                {
+                    println("load filter......................")
+                    EmitFilterState(imageFilters = it)
+                }
+                else
+                {
+                    println("null filter list......................")
+                }
+
+            }.onFailure {
+                println("error filter......................")
+            }
+        }
+    }
+
+    private fun getPreviewImage(imageBitMap: Bitmap):Bitmap
+    {
+        return  imageBitMap
+    }
+
+    private fun EmitFilterState(
+        isLoading: Boolean=false,
+        imageFilters: List<ImageFilter>? = null,
+        err: String? = null)
+    {
+        val dataStateer=ImageFilterDataState(isLoading,imageFilters,err)
+        imageFilterState.postValue(dataStateer)
+    }
+
+
+    data class ImageFilterDataState(val isLoading: Boolean,val imageFilter:List<ImageFilter>?,val err: String?)
+    //endregion
+
+
 
 }

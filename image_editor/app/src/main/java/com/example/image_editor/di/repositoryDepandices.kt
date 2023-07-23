@@ -5,6 +5,7 @@ import com.example.image_editor.repositories.EditImageRepoImpl
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
+//if you want to pass context as parameter in injected class follow this
 val reposatoryModule= module {
     factory <EditImageRepo>{EditImageRepoImpl(androidContext())  }
 }
