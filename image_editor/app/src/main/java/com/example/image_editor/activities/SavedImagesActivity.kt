@@ -1,25 +1,23 @@
 package com.example.image_editor.activities
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.example.image_editor.R
-import com.example.image_editor.data.ImageFilter
-import com.example.image_editor.databinding.ActivityMainBinding
 import com.example.image_editor.databinding.ActivitySavedImagesBinding
-import com.example.image_editor.globalListeners.filterListeners
-import com.example.image_editor.repositories.savedImageRepoImpl
-import com.example.image_editor.viewmodel.EditImageViewModel
 import com.example.image_editor.viewmodel.SavedImagesViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.io.ByteArrayOutputStream
 import java.io.File
 
 class SavedImagesActivity : AppCompatActivity() {
@@ -41,7 +39,7 @@ class SavedImagesActivity : AppCompatActivity() {
                binding.savedImagesProgressBar.visibility=View.GONE
                if (datastate.savedImages!=null)
                {
-                   binding.savedImagesRecyclerView.adapter=CustomAdapter(datastate.savedImages!!)
+                   binding.savedImagesRecyclerView.adapter=CustomAdapter(this,datastate.savedImages!!)
                }
 
            }
@@ -52,7 +50,7 @@ class SavedImagesActivity : AppCompatActivity() {
 }
 
 
-class CustomAdapter(val savedImages:List<Pair<File, Bitmap>>) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
+class CustomAdapter(var cxt:Context,val savedImages:List<Pair<File, Bitmap>>) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
 
     // create new views
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -73,6 +71,16 @@ class CustomAdapter(val savedImages:List<Pair<File, Bitmap>>) : RecyclerView.Ada
 
         holder.textView.text=""
         holder.imageView.setImageBitmap(myimage.second)
+        holder.imageView.setOnClickListener {
+            val stream = ByteArrayOutputStream()
+            myimage.second.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+            val byteArray: ByteArray = stream.toByteArray()
+
+            val in1 = Intent(cxt,PreviewImage::class.java)
+            in1.putExtra("image", byteArray)
+            val bund=Bundle()
+            startActivity(cxt,in1,bund)
+        }
 
 
 

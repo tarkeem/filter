@@ -7,6 +7,9 @@ import com.example.image_editor.EditImageActivity
 import com.example.image_editor.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
+    //apply==with   let==also
+    //companion object is to reach to its content without creating instance of the class
     companion object{
         private  const val  req_code=1
         const val imgurl="url"

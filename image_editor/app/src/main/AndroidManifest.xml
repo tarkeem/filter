@@ -17,6 +17,13 @@
         android:theme="@style/Theme.Image_editor"
         tools:targetApi="31">
         <activity
+            android:name=".activities.PreviewImage"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".activities.SavedImagesActivity"
             android:exported="false">
             <meta-data
@@ -57,6 +64,10 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

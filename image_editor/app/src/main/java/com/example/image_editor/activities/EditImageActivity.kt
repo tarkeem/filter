@@ -2,6 +2,7 @@ package com.example.image_editor
 
 import android.content.Context
 import android.content.res.Resources
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -33,13 +35,33 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class EditImageActivity : AppCompatActivity(),filterListeners {
 
     private  lateinit var binding: ActivityEditImageBinding
+    //note that the view model is injected to i call it like that
       val myViewModel:EditImageViewModel by viewModel<EditImageViewModel>()
+        lateinit var choicenImage:Bitmap
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivityEditImageBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setOserver()
         prepareImg()
+        binding.imageView3.setOnClickListener {
+            println("clicked")
+            finish()
+        }
+        binding.imageView4.setOnClickListener {
+
+            if (choicenImage!=null)
+            {
+                myViewModel.saveImage(choicenImage)
+                Toast.makeText(this, "Image Has Been Saved", Toast.LENGTH_SHORT).show()
+            }
+            else
+            {
+                Toast.makeText(this, "Please Choose a Filter", Toast.LENGTH_SHORT).show()
+            }
+
+
+        }
 
     }
 
@@ -49,6 +71,7 @@ class EditImageActivity : AppCompatActivity(),filterListeners {
 
     private  fun  setOserver()
     {
+        //note that there is no instance of repo or others ,just model view
         println("oserver fun fun..........................")
         myViewModel.imageLiveState.observe(this) { it ->
             println("change.................................")
@@ -97,12 +120,13 @@ class EditImageActivity : AppCompatActivity(),filterListeners {
             myViewModel.PrepareImage(uri!!);
         }
     }
-
-    override fun onFilterChange(filter: ImageFilter) {
+    override fun onFilterChange(filter: ImageFilter)
+    {
         /*first,make interface then make your activity inherit it then pass this as instance of the
         interface so any the change will affect on your activity */
         binding.previewimg.setImageBitmap(filter.filterPreview)
-        myViewModel.saveImage(filter.filterPreview)
+        choicenImage=filter.filterPreview
+
     }
 
 

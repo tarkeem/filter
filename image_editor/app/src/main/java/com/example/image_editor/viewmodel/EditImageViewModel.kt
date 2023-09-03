@@ -14,6 +14,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 class EditImageViewModel(private  val editImageRepo: EditImageRepo):ViewModel() {
+//the role of view model to connect the parts so it become ready for activity to use
 
     //region::prepareImage
     private val imageState:MutableLiveData<ImageDataState>by lazy {
